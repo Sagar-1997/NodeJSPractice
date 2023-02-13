@@ -6,7 +6,7 @@
 //by using required keyword we simply import any module or another file inside our nodejs file
 
 const http = require("http");
-const fs = require("fs");
+const route = require("./routes");
 //for creating server we have createServer method on http module
 //it takes function as argument which take request and response as parameter
 //request is use to handle incoming request
@@ -15,44 +15,17 @@ const fs = require("fs");
 // callback will run everytime we trigger a request from client
 //it use eventloop which keep on check code will run in loop
 // we ever we get request
-const server = http.createServer((request, response) => {
-  //console.log(request.url, request.method, request.headers);
-  // process.exit(); Node.js to terminate the process synchronously with an exit status of code
-  const url = request.url;
-  console.log(url);
-  const method = request.method;
-  console.log(method);
-  if (url === "/") {
-    response.write("<html>");
-    response.write("<head><title>Enter Message</title><head>");
-    response.write(
-      '<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">Send</button></form></body>'
-    );
-    response.write("</html>");
-    return response.end();
-  }
-  if (url === "/message" && method === "POST") {
-    fs.writeFileSync("message.txt", "DUMMY");
-    response.statusCode = 302;
-    response.setHeader("Location", "/");
-    return response.end();
-  }
-  if (url === "/message" && method === "POST") {
-    fs.writeFileSync("message.txt", "DUMMY");
-    response.statusCode = 302;
-    response.setHeader("Location", "/");
-    return response.end();
-    //we can use above line or below line its same
-    //response.writeHead(302, {
-    //  Location: "/",
-    //}); //Sends a response header to the request.
-  }
-  response.setHeader("Content-Type", "text/html"); // use to set request headers
-  response.write(
-    "<html><head><title>First Node</title></head><body><h1>My first node server</h1></body></html>"
-  ); // use to write data that we we will as response
-  response.end(); //it signals no more data will be written now
-});
+const server = http.createServer(route.handler);
 //Start a server listening for connections
 //it tell on which port or hostname server needs to run
 server.listen(3000);
+//Javascript use single thread to run code
+//but we have some aysnc code is will handle by event loop
+//Event loop basically running the callback code when certain event occur
+//it know all the callbacks
+//event loop is use for fast complete callback
+//if we have some heavy lifting file like working with files
+//it will be done by worker pool which is completely
+//detached from javascript code execution
+//workpool use multiple theards to perfomr heavy lifting
+//once workpool done tis working it trigger callback to event loop
